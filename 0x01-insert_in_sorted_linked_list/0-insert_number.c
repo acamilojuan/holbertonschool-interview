@@ -2,10 +2,10 @@
 #include "lists.h"
 
 /**
- * insert_node - insert node in ordered list
- * @head: pointer to head of list
- * @number: value to insert
- * Return: node address
+ * insert_node - Function to insert node in an ordered list
+ * @head: pointer to the head of the list
+ * @number: value that is going to be inserted
+ * Return: node position
  */
 listint_t *insert_node(listint_t **head, int number)
 {

@@ -12,7 +12,7 @@ int is_palindrome(listint_t **head)
 {
 
 		listint_t *aux = NULL;
-    int *array = NULL;
+		int *array = NULL;
 		int a = 0;
 		int b = 1;
 		int count = 1;

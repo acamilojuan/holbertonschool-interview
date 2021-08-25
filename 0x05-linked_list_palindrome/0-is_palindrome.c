@@ -28,7 +28,7 @@ int is_palindrome(listint_t **head)
 			count += 1;
 			aux = aux->next;
 		}
-		array = malloc((counter) * sizeof(int));
+		array = malloc((count) * sizeof(int));
 		aux = *head;
 		a = 0;
 		while (aux->next != NULL)
@@ -40,9 +40,9 @@ int is_palindrome(listint_t **head)
 		array[a] = aux->n;
 
 		a = 0;
-		while (a < counter && b == 1)
+		while (a < count && b == 1)
 		{
-		if (array[a] != array[counter - 1 - a])
+		if (array[a] != array[count - 1 - a])
 		{
 			b = 0;
 		}

@@ -1,10 +1,18 @@
 #!/usr/bin/python3
-""" Parse the logs """
+""" Parsing the logs """
 
 import sys
 
-status_code = {"200": 0, "301": 0, "400": 0, "401": 0,
-               "403": 0, "404": 0, "405": 0, "500": 0}
+status_code = {
+    '200': 0,
+    '301': 0,
+    '400': 0,
+    '401': 0,
+    '403': 0,
+    '404': 0,
+    '405': 0,
+    '500': 0
+}
 
 counts = {
     'size': 0,
@@ -13,7 +21,7 @@ counts = {
 
 
 def printv():
-    """print status code and size"""
+    """status code and size"""
     print('File size: {}'.format(counts['size']))
     for key in sorted(status_code.keys()):
         if status_code[key] > 0:
@@ -21,7 +29,7 @@ def printv():
 
 
 def read(line):
-    """count status cude and size (only read values)"""
+    """status and codes"""
     counts['size'] += int(line[-1])
     if line[-2] in status_code:
         status_code[line[-2]] += 1

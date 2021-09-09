@@ -1,51 +1,43 @@
 #!/usr/bin/python3
+""" Parse the logs """
 
 import sys
-import signal
 
+status_code = {"200": 0, "301": 0, "400": 0, "401": 0,
+               "403": 0, "404": 0, "405": 0, "500": 0}
 
-def parsing(function_size, status_code):
-    print('File size: {}'.format(function_size))
-    for key, n in sorted(status_code.items()):
-        if n != 0:
-            print('{}: {}'.format(key, n))
-
-status_code = {
-    '200': 0,
-    '301': 0,
-    '400': 0,
-    '401': 0,
-    '403': 0,
-    '404': 0,
-    '405': 0,
-    '500': 0
+counts = {
+    'size': 0,
+    'lines': 1
 }
 
-count = 1
-function_size = 0
 
-try:
-    for line in sys.stdin:
-        split1 = line.split()
+def printv():
+    """print status code and size"""
+    print('File size: {}'.format(counts['size']))
+    for key in sorted(status_code.keys()):
+        if status_code[key] > 0:
+            print('{}: {}'.format(key, status_code[key]))
 
-        if len(split1) > 2:
-            file_size = split1[-1]
-            status = split1[-2]
-            function_size = function_size + int(file_size)
 
-            if status in status_code:
-                status_code[status] = status_code[status] + 1
+def read(line):
+    """count status cude and size (only read values)"""
+    counts['size'] += int(line[-1])
+    if line[-2] in status_code:
+        status_code[line[-2]] += 1
 
-        if count % 10 == 0:
-            print('File size: {}'.format(function_size))
-            for key, value in sorted(status_code.items()):
-                if value != 0:
-                    print('{}: {}'.format(key, value))
 
-        count = count + 1
-
-except KeyboardInterrupt:
-    pass
-
-finally:
-    parsing(function_size, status_code)
+if __name__ == '__main__':
+    try:
+        for line in sys.stdin:
+            try:
+                read(line.split(' '))
+            except:
+                pass
+            if counts['lines'] % 10 == 0:
+                printv()
+            counts['lines'] += 1
+    except KeyboardInterrupt:
+        printv()
+        raise
+    printv()

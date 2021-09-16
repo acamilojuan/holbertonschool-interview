@@ -10,7 +10,7 @@
 int is_palindrome(unsigned long n)
 {
 	unsigned long original_n = 0;
-  unsigned long reversed_n = 0;
+	unsigned long reversed_n = 0;
 	unsigned long temp = 0;
 	
 

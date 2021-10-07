@@ -1,55 +1,43 @@
 #!/usr/bin/python3
-""" Class LogParsing """
-import re
+'''
+    a script that reads stdin line by line and computes metrics
+'''
+
+
 import sys
 
 
-def print_log_parsing(CODES, file_size):
-    """
-    function that print parsing logs
-    args:
-        codes: is a dictionary of status code
-        file_size: is the size of status
-    """
-    print("File size: {}".format(file_size))
-    for key, value in sorted(CODES.items()):
-        print("{}: {}".format(key, value))
+def addFileSize(data):
+    return int(data.split()[8])
 
 
-def run():
-    """"
-    function that search the status code and size number
-    """
-    PATTERN = '([\\d]{3})\\s([\\d]{1,4})$'
-    CODES = {}
-    STOP = 10
-    step = 1
-    size = 0
+def codes(data):
+    return data.split()[7]
 
-    while True:
+i = 0
+s = 0
+stat = ['200', '301', '400', '401', '403', '404', '405', '500']
+new = [0, 0, 0, 0, 0, 0, 0, 0]
 
-        try:
-            line = input()
-
-            status, file_size = re.search(PATTERN, line).group().split()
-
-            size += int(file_size)
-
-            try:
-                if CODES[status]:
-                    CODES[status] += 1
-            except KeyError:
-                CODES[status] = 1
-
-            if step == STOP:
-                print_log_parsing(CODES, size)
-                step = 1
-
-            step += 1
-        except (KeyboardInterrupt, EOFError):
-            print_log_parsing(CODES, size)
-            exit()
-
-
-if __name__ == '__main__':
-    run()
+try:
+    for line in sys.stdin:
+        c = line.split()
+        if len(c) > 2:
+            if c[-2] in stat:
+                x = stat.index(c[-2])
+                new[x] = new[x] + 1
+            i += 1
+            s = s + int(c[-1])
+        if i == 10:
+            i = 0
+            print("File size: {}".format(s))
+            for x in range(8):
+                if new[x] != 0:
+                    print('{}: {}'.format(stat[x], new[x]))
+except Exception:
+    pass
+finally:
+    print("File size: {}".format(s))
+    for x in range(8):
+        if new[x] != 0:
+            print("{}: {}".format(stat[x], new[x]))

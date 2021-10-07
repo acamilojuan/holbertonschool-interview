@@ -1,12 +1,12 @@
 #include "menger.h"
 
 /**
- * find_char - Find the specific var for a position
+ * findch - Fx to find the char
  * @column: Column
  * @row: Row
  * Return: ' ' or '#'
  */
-char find_char(int column, int row)
+char findch(int column, int row)
 {
 	for (; column && row; column /= 3, row /= 3)
 		if (column % 3 == 1 && row % 3 == 1)
@@ -31,7 +31,7 @@ void menger(int level)
 	for (column = 0; column < size; column++)
 	{
 		for (row = 0; row < size; row++)
-			printf("%c", find_char(column, row));
+			printf("%c", findch(column, row));
 		printf("\n");
 	}
 }

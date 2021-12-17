@@ -1,52 +1,43 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "search.h"
-
 /**
- * linear_skip - point
- * @list: head of skiplist
+ * linear_skip - Searches a value in sorted skip list of ints* 
+ * @list: pointer to head of skip list
  * @value: value to search
- * Return: list
+ *
+ * Return: pointer to the first node where value is located | NULL if not val
  */
-
 skiplist_t *linear_skip(skiplist_t *list, int value)
 {
-int  prev = 0;
-skiplist_t *f;
+	skiplist_t *prev = list;
 
-if (!list)
-return (NULL);
-f = list;
-for (list = list->express; list; list = list->express)
-{
-printf("Value checked at index [%lu] = [%d]\n", list->index, list->n);
-if (value >= prev && value <= list->n)
-{
-printf("Value found between indexes [%lu] and [%lu]\n", f->index, list->index);
-for (; f != list; f = f->next)
-{
-printf("Value checked at index [%lu] = [%d]\n", f->index, f->n);
-if (f->n == value)
-return (f);
-}
-}
+	if (!list)
+		return (NULL);
 
-if (!list->express)
-{
-for (; f->next; f = f->next)
-{}
-printf("Value found between indexes [%lu] and [%lu]\n", list->index, f->index);
-for (; list; list = list->next)
-{
-printf("Value checked at index [%lu] = [%d]\n", list->index, list->n);
-if (list->n == value)
-return (list);
-if (!list->next)
-break;
-}
-}
-prev = list->n;
-f = list;
-}
-return (list);
+	while (list->n < value && list->express)
+	{
+		prev = list;
+		list = list->express;
+		printf("Value checked at index [%ld] = [%d]\n", list->index, list->n);
+	}
+
+	if (value <= list->n)
+		printf("Value found between indexes [%ld] and [%ld]\n",
+				prev->index, list->index);
+	else
+	{
+		prev = prev->express;
+		while (list->next)
+			list = list->next;
+		printf("Value found between indexes [%ld] and [%ld]\n",
+				prev->index, list->index);
+	}
+
+	while (prev)
+	{
+		printf("Value checked at index [%ld] = [%d]\n", prev->index, prev->n);
+		if (prev->n == value)
+			return (prev);
+		prev = prev->next;
+	}
+	return (NULL);
 }

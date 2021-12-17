@@ -1,37 +1,28 @@
+
 #!/usr/bin/node
+// script that prints all characters of a Star Wars movie
+const request = require('request');
+const axios = require('axios');
 
-const requestOld = require('request');
-const util = require('util');
+const endPoint = 'https://swapi-api.hbtn.io/api/films/';
+const filmNumber = process.argv[2] ? process.argv[2] : null;
+const url = endPoint + filmNumber;
 
-const request = util.promisify(requestOld);
+request(url, async function (error, response, body) {
+  if (!error && response.statusCode === 200) {
+    body = JSON.parse(body);
 
-const myArgs = process.argv.slice(2);
-
-if (myArgs.length !== 1) {
-  console.log("Invalid number of arguments, use like: './starwars 3'");
-  process.exit(1);
-}
-
-const movieNum = myArgs[0];
-
-async function main () {
-  const rawData = await request(`https://swapi-api.hbtn.io/api/films/${movieNum}/`);
-
-  const data = JSON.parse(rawData.body);
-
-  const characters = [];
-
-  for (let i = 0; i < data.characters.length; i++) {
-    characters.push(request(data.characters[i]).then((result) =>
-      JSON.parse(result.body)
-    ));
+    for (const character in body.characters) {
+      await actor(body.characters[character]);
+    }
   }
+});
 
-  const charactersResult = await Promise.all(characters);
-
-  for (let i = 0; i < charactersResult.length; i++) {
-    console.log(charactersResult[i].name);
-  }
+async function actor (url) {
+  await axios.get(url)
+    .then(function (response) {
+      console.log(response.data.name);
+    });
 }
 
 main();

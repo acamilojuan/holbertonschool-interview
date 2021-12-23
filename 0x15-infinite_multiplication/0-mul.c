@@ -1,106 +1,80 @@
-#include <stdio.h>
-#include "holberton.h"
-
+#include <stdlib.h>
+#include <unistd.h>
 /**
- * Perror - print Error and exit
- * Return: 0.
- */
-void Perror(void)
-{
-_putchar('E');
-_putchar('r');
-_putchar('r');
-_putchar('o');
-_putchar('r');
-_putchar('\n');
-exit(98);
-}
-
-/**
- * check - checks if argument is valid
- * @argv: the argument
- * Return: returns the length of argument
- */
-int check(char *argv)
-{
-int i;
-for (i = 0; argv[i]; i++)
-{
-if (argv[i] < '0' || argv[i] > '9')
-Perror();
-}
-return (i);
-}
-
-/**
- * res - allocates a memory malloc
- * @length: the length
- * Return: pointer
- */
-char *res(int length)
-{
-char *p;
-int i;
-p = malloc(sizeof(char) * (length + 1));
-if (!p)
-Perror();
-for (i = 0; i < length; i++)
-{
-p[i] = '0';
-}
-p[i] = '\0';
-return (p);
-}
-
-/**
- * insertion - insert in array
- * @result: the array
- * @x: the product
- * @position: the position
- */
-void insertion(char *result, int x, int position)
-{
-x = x + (result[position] - '0');
-while (x > 0)
-{
-result[position] = (x % 10) + '0';
-x /= 10;
-if (x == 0)
-break;
-position--;
-x += (result[position] - '0');
-}
-}
-
-/**
- * main - Main function
- * @argc : number of arguments
- * @argv: array of pointers to arguments
- * Return: 0
+ * main -  multiplies two positive numbers
+ * @argc: number of arguments
+ * @argv: arguments list
+ * Return: 98 if error, 0 if success
  */
 int main(int argc, char *argv[])
 {
-int m, j, i, l1, l2;
-char *result, *u, *v;
+char *i, *j;
+char *a, *z;
+
+long int l1, l2;
+
 if (argc != 3)
-Perror();
-l1 = check(argv[1]);
-l2 = check(argv[2]);
-result = res(l1 + l2);
-u = argv[1];
-v = argv[2];
-for (m = l2 - 1; m >= 0; m--)
 {
-for (j = l1 - 1; j >= 0; j--)
+write(1, "Error\n", 6);
+return (98);
+}
+l1 = 0;
+for (i = argv[1]; *i != 0; i++, l1++)
+if (*i < '0' || *i > '9')
 {
-insertion(result, ((u[m] - '0') * (v[j] - '0')), m + j + 1);
+write(1, "Error\n", 6);
+return (98);
+}
+l2 = 0;
+for (j = argv[2]; *j != 0; j++, l2++)
+if (*j < '0' || *j > '9')
+{
+write(1, "Error\n", 6);
+return (98);
+}
+if (l1 == 0 || l2 == 0)
+{
+write(1, "Error\n", 6);
+return (98);
+}
+for (a = argv[1]; *a == '0' && a[1] != 0; l1--)
+a++;
+for (z = argv[2]; *z == '0' && z[1] != 0; l2--)
+z++;
+{
+long int i, j, r;
+int carry;
+char *result, *beg;
+
+result = malloc(l1 + l2 + 1);
+if (result == NULL)
+{
+write(1, "Error\n", 6);
+return (98);
+}
+for (i = 0; i < l1 + l2 + 3; i++)
+result[i] = 0;
+for (i = l1 - 1; i >= 0; i--)
+for (j = l2 - 1; j >= 0; j--)
+{
+result[i + j + 1] += ((a[i] - '0') *
+    (z[j] - '0'));
+for (r = i + j + 1; result[r] > 9;
+r--)
+{
+carry = result[r] / 10;
+result[r - 1] += carry;
+result[r] %= 10;
 }
 }
-for (i = 0; result[i] == '0' && result[i + 1]; i++)
-{
-;
-}
-printf("%s\n", &result[i]);
+for (i = l1 + l2 - 1; i >= 0; i--)
+result[i] += '0';
+for (beg = result; *beg == '0' && beg[1] != 0; beg++)
+l1--;
+l1 += l2;
+write(1, beg, l1);
+write(1, "\n", 1);
 free(result);
 return (0);
+}
 }

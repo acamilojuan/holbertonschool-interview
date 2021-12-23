@@ -1,89 +1,95 @@
-#include "holberton.h"
+#include <stdio.h>
+#include <stdlib.h>
 /**
-* _strlen - calculate length of string
-* @s: text
-* Return: integer
-*/
-int _strlen(char *s)
+ * _isdigit - this function says if a character is a digit
+ * @n: a pointer to a string.
+ * Return: return 1 if c is a digit and 0 in other cases.
+ */
+static int _isdigit(char *n)
 {
 	int i = 0;
 
-	while (s[i] != '\0')
-		i++;
-	return (i);
-}
-/**
- * Error - print error
- *
- */
-void Error(void)
-{
-	int i;
-	char text[] = "Error\n";
-
-	for (i = 0; i <= 5; i++)
-		_putchar(text[i]);
-	exit(98);
-}
-/**
-* isDigits - verify if num is a number
-* @s: string
-*/
-void isDigits(char *s)
-{
-	int i;
-
-	for (i = 0; i < _strlen(s); i++)
+	while (*(n + i) != '\0')
 	{
-		if (s[i] < '0' || s[i] > '9')
+		if (*(n + i) < 48 || *(n + i++) > 57)
+			return (0);
+	}
+	return (1);
+}
+/**
+ * _strlen  - this functions returns the length of a string
+ * @s: string
+ * Return: return the length in int
+ */
+static int _strlen(char *s)
+{
+	return (*s != '\0' ? 1 + _strlen(++s) : 0);
+}
+/**
+ * manual_mul - multiplies two strings arrays number by number
+ * @total: int array which stores the final value
+ * @argv: the arguments to be multiplicated
+ * @d1_len: data 1 digit number
+ * @d2_len: data 2 digit number
+ * Return: return the length in int
+ */
+static void manual_mul(int *total, char *argv[], int d1_len, int d2_len)
+{
+	int product, result, i, j;
+
+	for (i = (d2_len - 1); i >= 0; i--)
+	{
+		result = 0;
+		for (j = (d1_len - 1); j >= 0; j--)
 		{
-			Error();
+			product = (argv[2][i] - '0') * (argv[1][j] - '0');
+			result =  (product / 10);
+			total[(i + j) + 1] += (product % 10);
+			if (total[(i + j) + 1] > 9)
+			{
+				total[i + j] += total[(i + j) + 1] / 10;
+				total[(i + j) + 1] = total[(i + j) + 1] % 10;
+			}
+			total[(i + j)] += result;
 		}
 	}
+
 }
+
 /**
-* main - function
-* @argc: number of args
-* @argv: arguments
-* Return: 0
+ * main - the entry point
+ * @argc:the number of argumentes
+ * @argv: the arguments to be multiplicated
+ * Return: return 0 in success 98 in error.
  */
 int main(int argc, char *argv[])
 {
-	int L1, L2, i, j, c = 0, carry, var = 0;
-	int *result;
-	char *str;
+	int d1_len, d2_len, i;
+	int *total;
 
-	if (argc - 1 != 2 || argv[1] == NULL || argv[2] == NULL)
+	if (argc != 3 || !(_isdigit(argv[1])) || !(_isdigit(argv[2])))
 	{
-		Error();
+		puts("Error");
+		exit(98);
 	}
-
-	isDigits(argv[1]);
-	L1 = _strlen(argv[1]);
-	isDigits(argv[2]);
-	L2 = _strlen(argv[2]);
-
-	result = malloc(sizeof(int) * (L1 + L2));
-	for (i = L1 - 1; i >= 0; i--)
+	if (argv[1][0] == '0' || argv[2][0] == '0')
 	{
-		c = L1 - 1 - i;
-		carry = 0;
-		for (j = L2 - 1; j >= 0; j--, c++)
-		{
-			result[c] += (argv[1][i] - '0') * (argv[2][j] - '0') + carry;
-			carry = result[c] / 10;
-			result[c] %= 10;
-		}
-		if (carry)
-			result[c++] = carry;
-		if (result[c - 1])
-			var = MAX(var, c - 1);
+		printf("0\n");
+		return (0);
 	}
-	str = malloc(sizeof(char) * 1024);
-	for (i = var; i >= 0; i--)
-		str[var - i] = result[i] + '0';
-	str[var + 1] = '\0';
-	free(result);
-	printf("%s\n", str);
+	d1_len = _strlen(argv[1]);
+	d2_len = _strlen(argv[2]);
+	total = calloc(d1_len + d2_len, sizeof(int));
+	if (!total)
+	{
+		puts("Error");
+		exit(98);
+	}
+	manual_mul(total, argv, d1_len, d2_len);
+	i = *total == 0 ? 1 : 0;
+	for (; i < (d1_len + d2_len); i++)
+		printf("%d", total[i]);
+	printf("\n");
+	free(total);
 	return (0);
 }

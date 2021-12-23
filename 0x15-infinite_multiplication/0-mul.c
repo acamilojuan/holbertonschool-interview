@@ -1,80 +1,89 @@
-#include <stdlib.h>
-#include <unistd.h>
+#include "holberton.h"
 /**
- * main -  multiplies two positive numbers
- * @argc: number of arguments
- * @argv: arguments list
- * Return: 98 if error, 0 if success
+* _strlen - calculate length of string
+* @s: text
+* Return: integer
+*/
+int _strlen(char *s)
+{
+	int i = 0;
+
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+/**
+ * Error - print error
+ *
+ */
+void Error(void)
+{
+	int i;
+	char text[] = "Error\n";
+
+	for (i = 0; i <= 5; i++)
+		_putchar(text[i]);
+	exit(98);
+}
+/**
+* isDigits - verify if num is a number
+* @s: string
+*/
+void isDigits(char *s)
+{
+	int i;
+
+	for (i = 0; i < _strlen(s); i++)
+	{
+		if (s[i] < '0' || s[i] > '9')
+		{
+			Error();
+		}
+	}
+}
+/**
+* main - function
+* @argc: number of args
+* @argv: arguments
+* Return: 0
  */
 int main(int argc, char *argv[])
 {
-char *i, *j;
-char *a, *z;
+	int L1, L2, i, j, c = 0, carry, var = 0;
+	int *result;
+	char *str;
 
-long int l1, l2;
+	if (argc - 1 != 2 || argv[1] == NULL || argv[2] == NULL)
+	{
+		Error();
+	}
 
-if (argc != 3)
-{
-write(1, "Error\n", 6);
-return (98);
-}
-l1 = 0;
-for (i = argv[1]; *i != 0; i++, l1++)
-if (*i < '0' || *i > '9')
-{
-write(1, "Error\n", 6);
-return (98);
-}
-l2 = 0;
-for (j = argv[2]; *j != 0; j++, l2++)
-if (*j < '0' || *j > '9')
-{
-write(1, "Error\n", 6);
-return (98);
-}
-if (l1 == 0 || l2 == 0)
-{
-write(1, "Error\n", 6);
-return (98);
-}
-for (a = argv[1]; *a == '0' && a[1] != 0; l1--)
-a++;
-for (z = argv[2]; *z == '0' && z[1] != 0; l2--)
-z++;
-{
-long int i, j, r;
-int carry;
-char *result, *beg;
+	isDigits(argv[1]);
+	L1 = _strlen(argv[1]);
+	isDigits(argv[2]);
+	L2 = _strlen(argv[2]);
 
-result = malloc(l1 + l2 + 1);
-if (result == NULL)
-{
-write(1, "Error\n", 6);
-return (98);
-}
-for (i = 0; i < l1 + l2 + 3; i++)
-result[i] = 0;
-for (i = l1 - 1; i >= 0; i--)
-for (j = l2 - 1; j >= 0; j--)
-{
-result[i + j + 1] += ((a[i] - '0') *
-    (z[j] - '0'));
-for (r = i + j + 1; result[r] > 9;
-r--)
-{
-carry = result[r] / 10;
-result[r - 1] += carry;
-result[r] %= 10;
-}
-}
-for (i = l1 + l2 - 1; i >= 0; i--)
-result[i] += '0';
-for (beg = result; *beg == '0' && beg[1] != 0; beg++)
-l1--;
-l1 += l2;
-write(1, beg, l1);
-write(1, "\n", 1);
-free(result);
-return (0);
-}
+	result = malloc(sizeof(int) * (L1 + L2));
+	for (i = L1 - 1; i >= 0; i--)
+	{
+		c = L1 - 1 - i;
+		carry = 0;
+		for (j = L2 - 1; j >= 0; j--, c++)
+		{
+			result[c] += (argv[1][i] - '0') * (argv[2][j] - '0') + carry;
+			carry = result[c] / 10;
+			result[c] %= 10;
+		}
+		if (carry)
+			result[c++] = carry;
+		if (result[c - 1])
+			var = MAX(var, c - 1);
+	}
+	str = malloc(sizeof(char) * 1024);
+	for (i = var; i >= 0; i--)
+		str[var - i] = result[i] + '0';
+	str[var + 1] = '\0';
+	free(result);
+	printf("%s\n", str);
+	return (0);
 }

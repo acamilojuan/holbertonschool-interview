@@ -1,27 +1,37 @@
 #!/usr/bin/node
-const request = require('request');
 
-function send (person) {
-  return new Promise(function (resolve, reject) {
-    request(person, function (error, response, body) {
-      if (error || response.code >= 400) {
-        reject(error);
-      } else {
-        resolve(JSON.parse(body).name);
-      }
-    });
-  });
+const requestOld = require('request');
+const util = require('util');
+
+const request = util.promisify(requestOld);
+
+const myArgs = process.argv.slice(2);
+
+if (myArgs.length !== 1) {
+  console.log("Invalid number of arguments, use like: './starwars 3'");
+  process.exit(1);
 }
 
-request(`https://swapi-api.hbtn.io/api/films/${process.argv[2]}`,
-  async function (error, response, body) {
-    if (error) {
-      console.log(error);
-    } else {
-      const people = JSON.parse(body).characters;
-      for (let i = 0; i < people.length; ++i) {
-          const name = await send(people[i]);
-          console.log(name);
-      }
-    }
-  });
+const movieNum = myArgs[0];
+
+async function main () {
+  const rawData = await request(`https://swapi-api.hbtn.io/api/films/${movieNum}/`);
+
+  const data = JSON.parse(rawData.body);
+
+  const characters = [];
+
+  for (let i = 0; i < data.characters.length; i++) {
+    characters.push(request(data.characters[i]).then((result) =>
+      JSON.parse(result.body)
+    ));
+  }
+
+  const charactersResult = await Promise.all(characters);
+
+  for (let i = 0; i < charactersResult.length; i++) {
+    console.log(charactersResult[i].name);
+  }
+}
+
+main();

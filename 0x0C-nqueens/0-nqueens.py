@@ -1,51 +1,64 @@
 #!/usr/bin/python3
-''' Module to solve the N Queens Problem '''
+"""Nqueens"""
 
 import sys
-global N
-N = sys.argv[1]
 
-def printSolution(board):
-    for i in range(N):
-        for j in range(N):
-            print(board[i][j])
-            
-def nqueens(nQ):
-    grid = []
-    try:
-        for i in range(nQ - 1):
-            grid[i].add("*")
-            for j in range(nQ - 1):
-                grid[i][j].add("#")
-    except IndexError:
-        print("Usage: nqueens N")
-        exit(1)
 
-    print(grid)
-    return(grid)
-    
-def test_answer():
-    assert nqueens("i") == "N must be a number"
+def checkQueen(queens, queen):
+    """Check array queen"""
+    for x, y in queens:
+        if y == queen[1]:
+            return False
+        if abs((y - queen[1]) / (x - queen[0])) == 1:
+            return False
+    return True
 
-if __name__ == "__main__":
-    storeGrid = []
-    try:
-        args = len(sys.argv)
-        n = int(sys.argv[1])
-        
-        if(args == 0 | args > 2):
-            print("Usage: nqueens N")
-            exit(1)
-        
-        if(n < 4):
-            print("N must be at least 4")
-            exit(1)
-        
-        storeGrid = nqueens(n)
-        for spots in storeGrid:
-            print(spots)
 
-    except ValueError:
-        '''When arg not a number'''
-        print("N must be a number")
-        exit(1)
+def placeQueen(n, queens, solutions):
+    """localizate place of queen"""
+    if len(queens) == n:
+        for q in queens:
+            solutions.append(q)
+        return
+
+    for y in range(n):
+        queen = [len(queens), y]
+        if checkQueen(queens, queen):
+            queens.append(queen)
+            placeQueen(n, queens, solutions)
+            queens.pop()
+
+
+def main():
+    """main"""
+    if len(sys.argv) != 2:
+        print('Usage: nqueens N')
+        sys.exit(1)
+
+    if not sys.argv[1].isnumeric():
+        print('N must be a number')
+        sys.exit(1)
+
+    number = int(sys.argv[1])
+
+    if number < 4:
+        print('N must be at least 4')
+        sys.exit(1)
+
+    solutions = []
+    placeQueen(number, [], solutions)
+
+    tmp = []
+
+    count = 0
+    for m in solutions:
+        count += 1
+        tmp.append(m)
+        if count == number:
+            count = 0
+            print(tmp)
+            tmp = []
+
+
+if __name__ == '__main__':
+    main()

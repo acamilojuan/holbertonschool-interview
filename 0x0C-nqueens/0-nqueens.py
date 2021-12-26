@@ -1,64 +1,73 @@
 #!/usr/bin/python3
-"""Nqueens"""
-
+""" N QUEENS ALGORITHM WITH BACKTRACKING (RECURSION INSIDE LOOP) """
 import sys
 
 
-def checkQueen(queens, queen):
-    """Check array queen"""
-    for x, y in queens:
-        if y == queen[1]:
-            return False
-        if abs((y - queen[1]) / (x - queen[0])) == 1:
-            return False
-    return True
+class NQueen:
+    """ Class for solving N Queen Problem """
+
+    def __init__(self, n):
+        """ Global Variables """
+        self.n = n
+        self.x = [0 for i in range(n + 1)]
+        self.res = []
+
+    def place(self, k, i):
+        """ Checks if k Queen can be placed in i column (True)
+        or if the are attacking queens in row or diagonal (False)
+        """
+
+        # j checks from 1 to k - 1 (Up to previous queen)
+        for j in range(1, k):
+            # There is already a queen in column
+            # or a queen in same diagonal
+            if self.x[j] == i or \
+               abs(self.x[j] - i) == abs(j - k):
+                return 0
+        return 1
+
+    def nQueen(self, k):
+        """ Tries to place every queen in the board
+        Args:
+        k: starting queen from which to evaluate (should be 1)
+        """
+        # i goes from column 1 to column n (1st column is 1st index)
+        for i in range(1, self.n + 1):
+            if self.place(k, i):
+                # Queen can be placed in i column
+                self.x[k] = i
+                if k == self.n:
+                    # Placed all 4 Queens (A solution was found)
+                    solution = []
+                    for i in range(1, self.n + 1):
+                        solution.append([i - 1, self.x[i] - 1])
+                    self.res.append(solution)
+                else:
+                    # Need to place more Queens
+                    self.nQueen(k + 1)
+        return self.res
 
 
-def placeQueen(n, queens, solutions):
-    """localizate place of queen"""
-    if len(queens) == n:
-        for q in queens:
-            solutions.append(q)
-        return
+# Main
 
-    for y in range(n):
-        queen = [len(queens), y]
-        if checkQueen(queens, queen):
-            queens.append(queen)
-            placeQueen(n, queens, solutions)
-            queens.pop()
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    sys.exit(1)
 
+N = sys.argv[1]
 
-def main():
-    """main"""
-    if len(sys.argv) != 2:
-        print('Usage: nqueens N')
-        sys.exit(1)
+try:
+    N = int(N)
+except ValueError:
+    print("N must be a number")
+    sys.exit(1)
 
-    if not sys.argv[1].isnumeric():
-        print('N must be a number')
-        sys.exit(1)
+if N < 4:
+    print("N must be at least 4")
+    sys.exit(1)
 
-    number = int(sys.argv[1])
+queen = NQueen(N)
+res = queen.nQueen(1)
 
-    if number < 4:
-        print('N must be at least 4')
-        sys.exit(1)
-
-    solutions = []
-    placeQueen(number, [], solutions)
-
-    tmp = []
-
-    count = 0
-    for m in solutions:
-        count += 1
-        tmp.append(m)
-        if count == number:
-            count = 0
-            print(tmp)
-            tmp = []
-
-
-if __name__ == '__main__':
-    main()
+for i in res:
+    print(i)

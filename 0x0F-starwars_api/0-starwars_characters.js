@@ -1,16 +1,34 @@
 #!/usr/bin/node
+const request = require('request');
+const myArgs = process.argv.slice(2);
+const options = {
+  url: 'https://swapi-api.hbtn.io/api/films/' + myArgs
 
-const r = require('request');
-const url = 'https://swapi-api.hbtn.io/api/films/' + process.argv[2];
+};
+let dada;
+request(options, async (err, res, body) => {
+  const json = JSON.parse(body);
+  dada = json.characters;
+  if (err) {
+    throw (err);
+  }
+  for (const i in dada) {
+    await sleep(300);
+    const options = {
+      url: dada[i]
+    };
 
-r.get(url, (err, res, body) => {
-  if (err) console.log(err);
-  else {
-    JSON.parse(body).characters.forEach(character => {
-      r.get(character, (err, res, body) => {
-        if (err) console.log(err);
-        else console.log(JSON.parse(body).name);
-      });
+    request(options, (err, res, body) => {
+      const da = JSON.parse(body);
+      console.log(da.name);
+      if (err) {
+        throw (err);
+      }
     });
   }
 });
+function sleep (ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}

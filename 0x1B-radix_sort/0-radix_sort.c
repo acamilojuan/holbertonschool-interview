@@ -1,100 +1,57 @@
 #include "sort.h"
-
 /**
- * power_10 - Function that calculates power of 10
- * @n: n to calculate
- * Return: 10**n
+ * len - checks max element and count it's digits
+ * @array: pointer to first element of array
+ * @size: size of array
+ * Return: integer maximum number of digits
  */
-
-int power_10(int n)
+int len(int *array, size_t size)
 {
-int i;
-int s = 1;
+	int i, j, n = 0;
 
-for (i = 0; i < n; i++)
-s *= 10;
+	for (i = 0; i < (int)size; ++i)
+		if (array[i] > n)
+			n = array[i];
+	for (j = 0; n >= 1; ++j)
+		n = n / 10;
 
-return (s);
+	return (j);
 }
-
 /**
- * sort_matrix - sort by one digit in a matrix
- * @array: array to sort
- * @tmp: matrix to put the sorted numbers
- * @size: size of arrray
- * @level: digit to apply sortting
- * Return: 0 if the digit is the mostright digit, otherwise 1
+ * radix_sort - sorts an array using Radix sort algorithm
+ * @array: pointer integer, first element of array to sort
+ * @size: size of array
  */
-
-
-int sort_matrix(int *array, int **tmp, size_t size, int level)
-{
-int n, k, max = 0;
-int index[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-size_t i, j;
-
-for (i = 0; i < size; i++)
-{
-n = (array[i] % power_10(level)) / power_10(level - 1);
-tmp[n][index[n]++] = array[i];
-if (array[i] > max)
-max = array[i];
-}
-
-k = 0;
-j = 0;
-
-for (i = 0; i < 10; i++)
-{
-while (index[i] != 0 && k < index[i])
-{
-array[j + k] = tmp[i][k];
-k++;
-}
-j += k;
-k = 0;
-}
-print_array(array, size);
-
-if (max / power_10(level) == 0)
-return (0);
-return (1);
-}
-
-/**
- * gridfree - Function that frees a matrix
- * @grid: double poiter to free
- * Return: Nothing (void)
- */
-
-void gridfree(int **grid)
-{
-int i;
-
-for (i = 0; i < 10; i++)
-free(grid[i]);
-free(grid);
-}
-
-/**
- * radix_sort - Function that sorts an array of integers in ascending order
- * using the Radix sort algorithm
- * @array: array to sort
- * @size: size of the array
- * Return: Nothing (void)
- */
-
 void radix_sort(int *array, size_t size)
 {
-int **tmp, aux = 1, level = 1;
-size_t i;
+	int BB[100][100], B[100];
+	int i, j, k, r, c, max, div = 1;
 
-if (!array || size < 2)
-return;
-tmp = malloc(sizeof(int *) * 10);
-for (i = 0; i < 10; i++)
-tmp[i] = malloc(sizeof(int) * size);
-while (aux)
-aux = sorting_matrix(array, tmp, size, level++);
-gridfree(tmp);
+	if (!array || size < 2)
+		return;
+
+	max = len(array, size);
+	for (c = 0; c < max; c++)
+	{
+		for (i = 0; i < 100; i++)
+			B[i] = 0;
+
+		for (i = 0; i < (int)size; i++)
+		{
+			r = (array[i] / div) % 10;
+			BB[r][B[r]] = array[i];
+			B[r] += 1;
+		}
+		i = 0;
+		for (k = 0; k < 100; k++)
+		{
+			for (j = 0; j < B[k]; j++)
+			{
+				array[i] = BB[k][j];
+				i++;
+			}
+		}
+		div *= 10;
+		print_array(array, size);
+	}
 }

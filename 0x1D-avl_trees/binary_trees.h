@@ -1,11 +1,10 @@
-#ifndef AVL_H
-#define AVL_H
+#ifndef _BINARY_TREES_H_
+#define _BINARY_TREES_H_
 
-#include <limits.h>
+#include <stddef.h>
+#include <stdlib.h>
 #include <stdio.h>
-
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define ABS(x) ((x) > 0 ? (x) : (-(x)))
+#include <string.h>
 
 /**
  * struct binary_tree_s - Binary tree node
@@ -15,17 +14,18 @@
  * @left: Pointer to the left child node
  * @right: Pointer to the right child node
  */
-struct binary_tree_s
+typedef struct binary_tree_s
 {
 	int n;
 	struct binary_tree_s *parent;
 	struct binary_tree_s *left;
 	struct binary_tree_s *right;
-};
+} binary_tree_t;
 
-typedef struct binary_tree_s binary_tree_t;
-
+void binary_tree_print(const binary_tree_t *);
+int custom_binary_tree_height(const binary_tree_t *tree);
 int binary_tree_is_avl(const binary_tree_t *tree);
-int check_if_is_avl(const binary_tree_t *tree, int min, int max, int *height);
+int binary_tree_is_bst(const binary_tree_t *tree);
+int helper(const binary_tree_t *tree, int low, int hig);
 
-#endif
+#endif /* _BINARY_TREES_H_ */
